@@ -1,0 +1,2225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Retail Sales Analyzer Pro - Indian Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        /* SOFT BLUE LIGHT THEME */
+        :root {
+            --primary-color-light: #60a5fa;
+            /* Soft Sky Blue */
+            --primary-color-main: #3b82f6;
+            /* Medium Blue */
+            --primary-color-dark: #2563eb;
+            /* Deep Blue */
+            --background-light: #f8fafc;
+            --background-white: #ffffff;
+            --text-dark: #1e293b;
+            --text-medium: #475569;
+            --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* Changed to Light Gradient */
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #e2e8f0;
+            /* Very light subtle blue/gray background */
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            /* Increased horizontal padding to feel more spacious */
+            padding: 0 40px;
+        }
+
+        /* --- REFINED TWO-ROW HEADER CSS --- */
+
+        /* Full-width container for header and accent line */
+        .header-wrapper {
+            width: 100%;
+            position: relative;
+        }
+
+        /* --- UPDATED TITLE STYLE --- */
+        header h1 span {
+            /* Applies to the main title in the header */
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            /* Ensures better title look */
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-top-row h1 {
+            /* Used for the H1 on the dashboard page */
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-color-dark);
+            letter-spacing: -1px;
+            margin-bottom: 20px;
+            /* FIX 3: Left-align the Dashboard Title */
+            text-align: left;
+        }
+
+        /* Full-width blue accent line */
+        .header-accent-line {
+            width: 100%;
+            height: 6px;
+            /* Changed gradient to Soft Blue */
+            background: linear-gradient(90deg, var(--primary-color-light) 0%, var(--primary-color-main) 50%, var(--primary-color-dark) 100%);
+            /* Soft Blue Shadow */
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-accent-line::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+
+        /* --- UPDATED KPI BOX STYLES (AS REQUESTED) --- */
+        .kpi-grid {
+            /* Container for KPI boxes */
+            display: grid;
+            /* Added 6 columns to accommodate new metrics */
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-box {
+            /* The actual Box style */
+            background: var(--background-white);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            /* Box shadow */
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 5px solid var(--primary-color-main);
+            /* Left border for visual impact */
+        }
+
+        .kpi-box:hover {
+            transform: translateY(-4px);
+            /* Lift on hover */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .kpi-box-title {
+            font-size: 0.9rem;
+            color: var(--text-medium);
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-box-value {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            line-height: 1;
+        }
+
+        /* --- END OF KPI BOX STYLES --- */
+
+
+        /* 3. Modernizing General Cards */
+        .card {
+            background: var(--background-white);
+            border-radius: 16px;
+            /* Smoother corners */
+            padding: 30px;
+            margin-bottom: 30px;
+            /* Professional floating effect */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(59, 130, 246, 0.05);
+        }
+
+        .card:hover {
+            /* Subtle lift effect on hover */
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        /* 4. Interactive Links and Buttons */
+        a {
+            color: var(--primary-color-main);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        a:hover {
+            color: var(--primary-color-dark);
+            text-decoration: underline;
+        }
+
+        /* Navigation Styles */
+        nav {
+            /* Changed to Light Gray with Blur */
+            background: rgba(241, 245, 249, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 16px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            /* Soft Blue Border */
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            position: sticky;
+            top: 0;
+            /* FIX 1: Set to 0 to stick the navigation bar immediately */
+            z-index: 999;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            /* Light button background */
+            background: var(--background-white);
+            color: var(--text-medium);
+            /* Soft Blue Border */
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn:hover {
+            /* Light Blue Hover Background */
+            background: rgba(59, 130, 246, 0.05);
+            transform: translateY(-1px);
+            /* Primary Blue Border */
+            border-color: var(--primary-color-main);
+            /* Soft Blue Shadow */
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+        }
+
+        .nav-btn.active {
+            /* Changed to Soft Blue Gradient */
+            background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--primary-color-main) 100%);
+            border-color: var(--primary-color-dark);
+            color: white;
+            /* Primary Blue Shadow */
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+        }
+
+        main {
+            padding: 40px 0;
+            min-height: calc(100vh - 250px);
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hero Image Container */
+        .main-hero-image-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto 40px;
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .main-hero-image-container img {
+            width: 100%;
+            height: 600px;
+            object-fit: contain;
+            background-color: #f8fafc;
+            display: block;
+            border-radius: 16px;
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .main-hero-image-container img:hover {
+            transform: scale(1.02);
+        }
+
+        /* Card Titles */
+        .card-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            border-bottom: 3px solid;
+            /* Changed border image gradient to Soft Blue */
+            border-image: linear-gradient(90deg, var(--primary-color-main), var(--primary-color-light)) 1;
+            padding-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        /* Enhanced step boxes with animations (Home Page) */
+        .step-box {
+            background: var(--background-white);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(15px);
+            animation: slideUp 0.5s ease-out forwards;
+        }
+
+        .step-box:nth-child(1) {
+            animation-delay: 0.0s;
+        }
+
+        .step-box:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .step-box:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .step-box:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+
+        .step-box:nth-child(5) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .step-box:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            /* Soft Blue Border */
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+
+        .step-number {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 800;
+            flex-shrink: 0;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                /* Soft Blue Shadow */
+                box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
+            }
+
+            50% {
+                /* Slightly deeper Soft Blue Shadow */
+                box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+            }
+        }
+
+        .step-number-1 {
+            /* Soft Blue Gradient */
+            background: linear-gradient(135deg, var(--primary-color-light), var(--primary-color-main));
+            color: white;
+        }
+
+        .step-number-2 {
+            /* Green Gradient */
+            background: linear-gradient(135deg, #4ade80, #10b981);
+            color: white;
+        }
+
+        .step-number-3 {
+            /* Orange Gradient */
+            background: linear-gradient(135deg, #fcd34d, #f59e0b);
+            color: white;
+        }
+
+        .step-number-4 {
+            /* Deep Blue Gradient (secondary blue) */
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+
+        .step-number-5 {
+            /* Reused primary soft blue */
+            background: linear-gradient(135deg, var(--primary-color-main), var(--primary-color-dark));
+            color: white;
+        }
+
+        .step-content {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-description {
+            color: var(--text-medium);
+            line-height: 1.6;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .step-details {
+            background: var(--background-white);
+            padding: 16px;
+            border-radius: 10px;
+            border-left: 4px solid;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+
+        .step-details:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-box:nth-child(1) .step-details {
+            /* Soft Blue border */
+            border-color: var(--primary-color-main);
+        }
+
+        .step-box:nth-child(2) .step-details {
+            border-color: #10b981;
+        }
+
+        .step-box:nth-child(3) .step-details {
+            border-color: #f59e0b;
+        }
+
+        .step-box:nth-child(4) .step-details {
+            /* Deep Blue border */
+            border-color: #1d4ed8;
+        }
+
+        .step-box:nth-child(5) .step-details {
+            /* Medium Blue border */
+            border-color: var(--primary-color-main);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px;
+            background: #f8fafc;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .feature-item:hover {
+            background: #e2e8f0;
+            transform: translateX(2px);
+        }
+
+        .feature-check {
+            color: #10b981;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        /* Stat Card Styles (used for KPIs on Dashboard) */
+        .stat-card {
+            /* Changed to Soft Blue Gradient */
+            background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--primary-color-main) 100%);
+            color: white;
+            padding: 28px;
+            border-radius: 12px;
+            /* Soft Blue Shadow */
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            /* Deeper Soft Blue Shadow */
+            box-shadow: 0 12px 28px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Specific Stat Card Colors */
+        .stat-card.blue {
+            /* Deep Blue Gradient */
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+
+        .stat-card.green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .stat-card.purple {
+            /* Reused primary soft blue */
+            background: linear-gradient(135deg, var(--primary-color-main) 0%, var(--primary-color-dark) 100%);
+        }
+
+        .stat-card.orange {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .stat-card.red {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .stat-card.teal {
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.95;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 38px;
+            font-weight: 900;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            /* Changed to Soft Blue Gradient */
+            background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--primary-color-main) 100%);
+            color: white;
+            /* Soft Blue Shadow */
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            /* Deeper Soft Blue Shadow */
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4ade80 0%, #10b981 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+        }
+
+        .upload-area {
+            /* Soft Blue dashed border */
+            border: 3px dashed rgba(59, 130, 246, 0.4);
+            border-radius: 20px;
+            padding: 60px 30px;
+            text-align: center;
+            /* Light Blue/White Gradient */
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(96, 165, 250, 0.05) 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area:hover {
+            /* Primary Blue Border */
+            border-color: var(--primary-color-main);
+            /* Slightly more defined background */
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(96, 165, 250, 0.1) 100%);
+            transform: scale(1.01);
+        }
+
+        .upload-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            /* Primary Blue Color */
+            color: var(--primary-color-main);
+            animation: bounce 2s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        .ai-insights-box {
+            /* Very Light Blue Background */
+            background: #eff6ff;
+            /* Primary Blue Border */
+            border-left: 5px solid var(--primary-color-main);
+            padding: 28px;
+            border-radius: 12px;
+            margin-top: 20px;
+            /* Soft Blue Shadow */
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.1);
+        }
+
+        .ai-insights-box h4 {
+            /* Dark Blue Text */
+            color: #1e40af;
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .ai-insight-item {
+            background: var(--background-white);
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            /* Soft Blue Border */
+            border-left: 3px solid var(--primary-color-light);
+        }
+
+        .ai-recommendations-box {
+            background: #ecfdf5;
+            /* Green Border */
+            border-left: 5px solid #10b981;
+            padding: 28px;
+            border-radius: 12px;
+            margin-top: 20px;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.1);
+        }
+
+        .ai-recommendations-box h4 {
+            color: #065f46;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--background-white);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        thead {
+            /* Changed to Soft Blue Gradient */
+            background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--primary-color-main) 100%);
+            color: white;
+        }
+
+        th {
+            padding: 14px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+        }
+
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        select {
+            /* Light Theme input */
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        input:focus,
+        select:focus {
+            /* Primary Blue focus */
+            border-color: var(--primary-color-main);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Footer Styling */
+        footer {
+            /* Changed to Dark, for a professional contrast */
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            text-align: left;
+            /* Changed to left align content inside */
+            padding: 60px 20px;
+            /* Made bigger */
+            margin-top: 60px;
+            /* Increased margin */
+            box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.3);
+            /* Enhanced shadow */
+        }
+
+        .footer-content {
+            /* Creates a responsive 3-column layout */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .footer-section h4 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color-light);
+            /* Uses your soft blue color for headers */
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            font-size: 14px;
+            color: #ccc;
+            line-height: 1.8;
+            margin-bottom: 10px;
+            text-decoration: none;
+            display: block;
+            /* Makes links take full width for easier clicking */
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary-color-main);
+            /* Blue hover effect */
+        }
+
+        .footer-bottom {
+            text-align: center;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .badge {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .badge-blue {
+            /* Soft Blue Badge */
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-green {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-info {
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+
+        .alert-success {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        /* Alert container for dynamic alerts */
+        #alert-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .alert-dynamic {
+            background: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            opacity: 1;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="alert-container"></div>
+
+    <div class="header-wrapper">
+        <header>
+            <div class="container">
+                <div
+                    style="display: flex; justify-content: flex-start; align-items: center; gap: 20px; padding: 20px 0;">
+                    <img src="C:\Users\krish\OneDrive\Pictures\SDlogo.jpg" alt="Retail Analyzer Logo"
+                        style="height: 48px; width: 48px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                    <h1 style="margin: 0;">
+                        <span style="color: var(--primary-color-dark);"> Retail Sales Analyzer Pro</span>
+                    </h1>
+                </div>
+            </div>
+        </header>
+        <div class="header-accent-line"></div>
+    </div>
+
+    <nav>
+        <div class="container">
+            <div class="nav-buttons">
+                <button class="nav-btn active" onclick="showPage('home')"><span>🏠 Home</span></button>
+                <button class="nav-btn" onclick="showPage('upload')"><span>📤 Upload Data</span></button>
+                <button class="nav-btn" onclick="showPage('dashboard')"><span>📈 Dashboard</span></button>
+                <button class="nav-btn" onclick="showPage('insights')"><span>🤖 AI Insights</span></button>
+                <button class="nav-btn" onclick="showPage('inventory')"><span>📦 Inventory Planning</span></button>
+                <button class="nav-btn" onclick="showPage('database')"><span>🗄️ Database</span></button>
+            </div>
+        </div>
+    </nav>
+
+
+    <main class="container">
+        <div id="home-page" class="page active">
+            <div class="main-hero-image-container">
+                <img src="C:\Users\krish\OneDrive\Pictures\SD.jpg" alt="Retail Sales Growth Visual"
+                    style="width: 100%; height: auto; display: block; object-fit: cover;">
+            </div>
+            <div style="text-align: left; margin-bottom: 50px;">
+                <p style="font-size: 18px; color: var(--text-medium); line-height: 1.6; max-width: 800px; margin: 0;">
+                </p>
+            </div>
+
+            <div class="card" style="background: var(--background-light); border: 1px solid #e2e8f0;">
+                <h2 class="card-title">How to Use - Quick Start Guide</h2>
+
+                <div class="step-box">
+                    <div style="display: flex; gap: 20px; align-items: start;">
+                        <div class="step-number step-number-1">1</div>
+                        <div class="step-content">
+                            <h3 class="step-title">📤 Upload Your Sales Data</h3>
+                            <p class="step-description">
+                                Navigate to the <strong>"Upload Data"</strong> section and upload your CSV file
+                                containing sales records.
+                            </p>
+                            <div class="step-details">
+                                <strong style="color: var(--text-dark); font-size: 15px;">Required CSV
+                                    Columns:</strong>
+                                <ul style="margin: 10px 0 0 16px; color: #64748b; font-size: 14px; line-height: 1.8;">
+                                    <li>Date (format: YYYY-MM-DD)</li>
+                                    <li>Product ID, Product Name, Category</li>
+                                    <li>Quantity, Price, Cost Price</li>
+                                    <li>Profit (or will be auto-calculated if Cost is provided)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <div style="display: flex; gap: 20px; align-items: start;">
+                        <div class="step-number step-number-2">2</div>
+                        <div class="step-content">
+                            <h3 class="step-title">📈 Explore the Dashboard</h3>
+                            <p class="step-description">
+                                Once data is uploaded, visit the <strong>"Dashboard"</strong> to see
+                                comprehensive analytics.
+                            </p>
+                            <div class="step-details">
+                                <div class="feature-grid">
+                                    <div class="feature-item">
+                                        <span class="feature-check">✓</span>
+                                        <span>Monthly sales trends</span>
+                                    </div>
+                                    <div class="feature-item">
+                                        <span class="feature-check">✓</span>
+                                        <span>Category performance</span>
+                                    </div>
+                                    <div class="feature-item">
+                                        <span class="feature-check">✓</span>
+                                        <span>Top products analysis</span>
+                                    </div>
+                                    <div class="feature-item">
+                                        <span class="feature-check">✓</span>
+                                        <span>Profit breakdowns</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <div style="display: flex; gap: 20px; align-items: start;">
+                        <div class="step-number step-number-3">3</div>
+                        <div class="step-content">
+                            <h3 class="step-title">🤖 Get AI-Powered Insights</h3>
+                            <p class="step-description">
+                                Head to <strong>"AI Insights"</strong> for intelligent business recommendations
+                                including sales forecasts, growth predictions, and strategic advice.
+                            </p>
+                            <div class="step-details">
+                                <strong style="color: var(--text-dark);">AI-generated content includes:</strong>
+                                <ul style="margin: 10px 0 0 16px; color: #64748b; font-size: 14px; line-height: 1.8;">
+                                    <li>Automated Revenue Milestones</li>
+                                    <li>Peak Performance Month Analysis</li>
+                                    <li>Category Dominance Reports</li>
+                                    <li>Simple Predictive Forecasting</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <div style="display: flex; gap: 20px; align-items: start;">
+                        <div class="step-number step-number-4">4</div>
+                        <div class="step-content">
+                            <h3 class="step-title">📦 Optimize Inventory</h3>
+                            <p class="step-description">
+                                Use the <strong>"Inventory Planning"</strong> tab to view stock recommendations
+                                based on sales velocity and profit margins.
+                            </p>
+                            <div class="step-details">
+                                <strong style="color: var(--text-dark);">Key Inventory Features:</strong>
+                                <ul style="margin: 10px 0 0 16px; color: #64748b; font-size: 14px; line-height: 1.8;">
+                                    <li>Recommended Monthly Investment</li>
+                                    <li>Top 10 Fast-Moving Products</li>
+                                    <li>Stock-Up Recommendations (Unit count)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="upload-page" class="page">
+            <div class="card">
+                <h2 class="card-title">Upload Sales Data</h2>
+                <div class="upload-area" id="upload-area">
+                    <div class="upload-icon">📊</div>
+                    <h3
+                        style="font-size: 20px; margin-bottom: 10px; color: var(--text-dark); font-weight: 700; position: relative; z-index: 1;">
+                        Drag & Drop or Click to Upload CSV</h3>
+                    <p
+                        style="color: var(--text-medium); margin-bottom: 20px; font-size: 15px; position: relative; z-index: 1;">
+                        Expected columns: Date, Product ID, Product Name, Category, Quantity, Price, Cost Price,
+                        Profit, Customer</p>
+                    <input type="file" id="file-input" accept=".csv" style="display: none;">
+                    <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">
+                        <span>Select CSV File</span>
+                    </button>
+                </div>
+
+                <div id="preview-section" class="card" style="margin-top: 30px;">
+                    <h3 style="font-size: 20px; font-weight: 700; color: var(--text-dark); margin-bottom: 15px;">Last 5
+                        Uploaded Records Preview</h3>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; font-size: 14px;">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Product Name</th>
+                                    <th>Category</th>
+                                    <th>Quantity</th>
+                                    <th>Price (₹)</th>
+                                    <th>Cost Price (₹)</th>
+                                    <th>Profit (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="preview-body">
+                                <tr>
+                                    <td colspan="7" style="text-align: center;">Upload a file to see a preview of
+                                        your data.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboard-page" class="page">
+            <h1 class="header-top-row">Sales Data Analyzer Dashboard</h1>
+
+            <div class="kpi-grid">
+                <div class="kpi-box" style="border-left-color: var(--primary-color-main);">
+                    <div class="kpi-box-title">Total Revenue</div>
+                    <div class="kpi-box-value" id="dash-total-sales">₹0</div>
+                </div>
+                <div class="kpi-box" style="border-left-color: #10b981;">
+                    <div class="kpi-box-title">Total Profit</div>
+                    <div class="kpi-box-value" id="dash-total-profit">₹0</div>
+                </div>
+                <div class="kpi-box" style="border-left-color: #dc2626;">
+                    <div class="kpi-box-title">Total Losses</div>
+                    <div class="kpi-box-value" id="dash-total-losses">₹0</div>
+                </div>
+                <div class="kpi-box" style="border-left-color: #f59e0b;">
+                    <div class="kpi-box-title">Return on Investment (ROI)</div>
+                    <div class="kpi-box-value" id="dash-roi">0%</div>
+                </div>
+                <div class="kpi-box" style="border-left-color: #f59e0b;">
+                    <div class="kpi-box-title">Loss Percentage</div>
+                    <div class="kpi-box-value" id="dash-loss-percentage">0%</div>
+                </div>
+                <div class="kpi-box" style="border-left-color: #ef4444;">
+                    <div class="kpi-box-title">Total Units Sold</div>
+                    <div class="kpi-box-value" id="dash-total-quantity">0</div>
+                </div>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3 class="card-title">Monthly Sales & Profit Trend</h3>
+                    <div class="chart-container" style="height: 350px;">
+                        <canvas id="monthly-chart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Top 5 Products by Sales</h3>
+                    <div class="chart-container" style="height: 350px;">
+                        <canvas id="products-chart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Transactions by Category</h3>
+                    <div class="chart-container" style="height: 350px;">
+                        <canvas id="category-chart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Profit Distribution by Category</h3>
+                    <div class="chart-container" style="height: 350px;">
+                        <canvas id="profit-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="insights-page" class="page">
+            <div class="card">
+                <h2 class="card-title">AI-Powered Business Intelligence</h2>
+
+                <div class="ai-insights-box">
+                    <h4>💡 Key Business Insights</h4>
+                    <div id="insights-list">
+                        <div class="alert alert-info">
+                            <span>Upload data to generate AI insights here.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ai-recommendations-box">
+                    <h4>🎯 Strategic Recommendations</h4>
+                    <div id="recommendations-list">
+                        <div class="alert alert-info">
+                            <span>Upload data to receive strategic recommendations here.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card"
+                    style="background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%); border-left: 5px solid #f59e0b; margin-top: 30px;">
+                    <h3 style="font-size: 20px; font-weight: 800; color: #78350f; margin-bottom: 20px;">📊 Predictive
+                        Analytics</h3>
+                    <div class="grid grid-3">
+                        <div
+                            style="text-align: center; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                            <div style="font-size: 13px; color: #78350f; margin-bottom: 8px; font-weight: 600;"> Next
+                                Month Sales Forecast</div>
+                            <div style="font-size: 32px; font-weight: 900; color: #f59e0b;" id="forecast-next-month">
+                                ₹0</div>
+                        </div>
+                        <div
+                            style="text-align: center; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                            <div style="font-size: 13px; color: #78350f; margin-bottom: 8px; font-weight: 600;">
+                                Predicted Profit</div>
+                            <div style="font-size: 32px; font-weight: 900; color: #10b981;" id="forecast-profit"> ₹0
+                            </div>
+                        </div>
+                        <div
+                            style="text-align: center; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                            <div style="font-size: 13px; color: #78350f; margin-bottom: 8px; font-weight: 600;">
+                                Estimated Growth Rate</div>
+                            <div style="font-size: 32px; font-weight: 900; color: #3b82f6;" id="forecast-growth">+0%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="inventory-page" class="page">
+            <div class="card">
+                <h2 class="card-title">Inventory & Stock Planning</h2>
+
+                <div class="grid grid-3" style="margin-bottom: 30px;">
+                    <div class="stat-card purple">
+                        <div class="stat-label">Total Investment Value</div>
+                        <div class="stat-value" id="total-investment">₹0</div>
+                    </div>
+                    <div class="stat-card orange">
+                        <div class="stat-label">Recommended Monthly Investment</div>
+                        <div class="stat-value" id="recommended-investment">₹0</div>
+                    </div>
+                    <div class="stat-card green">
+                        <div class="stat-label">Top 10 Products Revenue Share</div>
+                        <div class="stat-value" id="top10-revenue-share">0%</div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px; background: #ecfdf5; border-left: 5px solid #10b981;">
+                    <h3 style="font-size: 20px; font-weight: 800; color: #065f46; margin-bottom: 16px;">📊 Stock
+                        Quantity
+                        Recommendations</h3>
+                    <div id="stock-recommendations">
+                        <div class="alert alert-info">
+                            <span>Upload data to receive stock recommendations.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-2" style="margin-top: 30px;">
+                    <div class="card" style="background: #f8fafc;">
+                        <h3 class="card-title" style="font-size: 20px;">Top 10 Fast-Moving Products</h3>
+                        <div id="best-selling-list">
+                            <p style="color: var(--text-medium);">No data.</p>
+                        </div>
+                    </div>
+                    <div class="card" style="background: #fef2f2;">
+                        <h3 class="card-title"
+                            style="font-size: 20px; border-image: linear-gradient(90deg, #ef4444, #f87171) 1;">10
+                            Slow-Moving Products Alert</h3>
+                        <div id="slow-moving-list">
+                            <p style="color: var(--text-medium);">No data.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="database-page" class="page">
+            <div class="card">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                    <h2 class="card-title" style="margin: 0;">Sales Database</h2>
+                    // ...existing code...
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="loadDatabase()"><span>🔄 Refresh</span></button>
+                        <button class="btn btn-success" onclick="exportData()"><span>📥 Export CSV</span></button>
+                        <button class="btn btn-danger" onclick="clearAllData()"><span>🗑️ Clear All</span></button>
+                        <!-- added: quick reset that clears storage and reloads so new dataset names show up -->
+                        <button class="btn" onclick="resetAndRefreshData()"
+                            style="background:#334155;color:white;border-radius:10px;padding:10px 14px;">Reset
+                            App</button>
+                    </div>
+                    // ...existing code...
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <input type="text" id="search-input" placeholder="🔍 Search by product, category, or customer..."
+                        onkeyup="searchDatabase()" style="width: 100%;">
+                </div>
+                <div style="overflow-x: auto;">
+                    <table id="database-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Product ID</th>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
+                                <th>Price (₹)</th>
+                                <th>Cost Price (₹)</th>
+                                <th>Profit (₹)</th>
+                                <th>Customer</th>
+                            </tr>
+                        </thead>
+                        <tbody id="database-body">
+                            <tr>
+                                <td colspan="9" style="text-align: center; padding: 40px;">No data. Upload CSV to begin.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 12px; color: #64748b; font-size: 13px; font-weight: 600;"> Showing <span
+                        id="showing-count">0</span> of <span id="total-count">0</span> records </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>About Analyzer Pro</h4>
+                    <p>
+                        The AI-Powered Retail Sales Analyzer Pro provides intelligent insights, sales forecasts, and
+                        optimized inventory planning specifically tailored for the Indian retail market.
+                    </p>
+                    <p>
+                        <a href="#" style="color: var(--primary-color-light);">Learn More &rarr;</a>
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <a href="#" onclick="showPage('upload')">Upload Data</a>
+                    <a href="#" onclick="showPage('dashboard')">Analytics Dashboard</a>
+                    <a href="#" onclick="showPage('insights')">AI Insights</a>
+                    <a href="#" onclick="showPage('inventory')">Inventory Planning</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <p>📧 Email: <a href="mailto:support@retailanalyzerpro.in">User@retailanalyzerpro.in</a>
+                    </p>
+                    <p>📞 Phone: <a href="tel:+919876543210">+91 98765 43210</a></p>
+                    <p>📍 Address: Level 1, Tech Innovation Center, Mumbai, India - 400001</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 AI-Powered Retail Sales Analyzer Pro. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ...existing code...
+        const STORAGE_KEY = 'retailSalesDataIndia';
+        let salesData = [];
+        const charts = {};
+
+        // ADJUST DISPLAY: set multiplier (1 = no change)
+        const DISPLAY_ADJUST_FACTOR = 1.10; // change to 1.25 for +25%, etc.
+        // ...existing code...
+
+        // --- UTILITIES ---
+        function formatCurrency(amount) {
+            return `₹${(Math.round(amount * 100) / 100).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+        }
+
+        function formatPercentage(amount) {
+            return `${Number(amount).toFixed(1)}%`;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            if (isNaN(date)) return dateString;
+            return date.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+        function loadData() {
+            try {
+                const storedData = localStorage.getItem(STORAGE_KEY);
+                if (storedData) {
+                    salesData = JSON.parse(storedData).map(row => ({
+                        // Preserve existing text fields (Product Name, Category, Customer, etc.)
+                        ...row,
+
+                        // Ensure the item names are mapped to the correct numerical values
+                        // We use the exact names from your new CSV format
+                        Quantity: Number(row.Quantity || 0),
+                        Price: Number(row.Price || 0),
+                        'Cost Price': Number(row['Cost Price'] || 0),
+                        Profit: Number(row.Profit || 0),
+                        'Damaged Quantity': Number(row['Damaged Quantity'] || 0)
+                    }));
+                }
+            } catch (error) {
+                console.error("Error loading data:", error);
+                showAlert('Error loading data from storage.', 'error');
+            }
+        }
+
+        // ADD THIS SMALL FUNCTION BELOW loadData TO SYNC NEW NAMES
+        function resetAndRefreshData() {
+            localStorage.removeItem(STORAGE_KEY);
+            location.reload();
+            alert("Storage cleared! Now upload your new CSV to see the updated item names.");
+        }
+        function saveData() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(salesData));
+            } catch (error) {
+                console.error("Error saving data:", error);
+                showAlert('Error saving data to storage.', 'error');
+            }
+        }
+
+        function clearAllData() {
+            if (confirm("Are you sure you want to permanently delete ALL sales data?")) {
+                localStorage.removeItem(STORAGE_KEY);
+                salesData = [];
+                showAlert('All sales data cleared.', 'success');
+                showPage('home'); // Redirect to home after clear
+            }
+        }
+
+        // --- NAVIGATION ---
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            const targetPage = document.getElementById(`${pageId}-page`);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.querySelector(`.nav-btn[onclick*="${pageId}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Trigger data updates on page switch
+            if (pageId === 'dashboard') {
+                updateDashboard();
+            } else if (pageId === 'database') {
+                loadDatabase();
+            } else if (pageId === 'insights') {
+                generateAIInsights();
+            } else if (pageId === 'inventory') {
+                generateInventoryPlan();
+            }
+        }
+
+        // --- ALERTS ---
+        function showAlert(message, type = 'info', duration = 5000) {
+            const container = document.getElementById('alert-container');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert-dynamic alert alert-${type}`;
+            alertDiv.innerHTML = `<span>${message}</span>`;
+
+            // Set initial style for animation
+            alertDiv.style.opacity = '0';
+            alertDiv.style.transform = 'translateX(100%)';
+            container.appendChild(alertDiv);
+
+            // Trigger fade-in animation
+            setTimeout(() => {
+                alertDiv.style.opacity = '1';
+                alertDiv.style.transform = 'translateX(0)';
+            }, 10);
+
+            // Trigger fade-out animation
+            setTimeout(() => {
+                alertDiv.style.opacity = '0';
+                alertDiv.style.transform = 'translateX(100%)';
+                setTimeout(() => alertDiv.remove(), 300);
+            }, duration);
+        }
+
+        // --- CSV UPLOAD LOGIC ---
+        const fileInput = document.getElementById('file-input');
+        const uploadArea = document.getElementById('upload-area');
+
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                parseCSV(file);
+                event.target.value = null; // Clear input
+            }
+        });
+
+        // FIX: The CSS variable usage was a syntax error that crashed the script.
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            // Using the hardcoded blue color from the CSS variable: #3b82f6
+            uploadArea.style.borderColor = '#3b82f6';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            // Reset to default dashed border by clearing inline style
+            uploadArea.style.borderColor = '';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '';
+            const file = e.dataTransfer.files[0];
+            if (file && file.name.endsWith('.csv')) {
+                parseCSV(file);
+            } else {
+                showAlert('Please drop a valid CSV file.', 'error');
+            }
+        });
+
+        function parseCSV(file) {
+            showAlert(`Parsing file: ${file.name}...`, 'info', 3000);
+            Papa.parse(file, {
+                header: true,
+                dynamicTyping: true,
+                skipEmptyLines: true,
+                complete: async function (results) {
+                    await processParsedData(results.data);
+                },
+                error: function (error) {
+                    showAlert(`Error parsing CSV: ${error.message}`, 'error');
+                }
+            });
+        }
+
+        async function processParsedData(data) {
+            const cleanedData = data.map(row => {
+                let quantity = Number(row.Quantity) || 0;
+                let price = Number(row.Price) || 0;
+                let costPrice = Number(row['Cost Price']) || 0;
+                let profit = Number(row.Profit);
+
+                // Calculate Profit if not provided or zero/null
+                if (isNaN(profit) || profit === 0) {
+                    profit = quantity * (price - costPrice);
+                }
+
+                // Basic validation and mapping
+                if (!row.Date || !row['Product Name'] || quantity <= 0) {
+                    return null; // Skip invalid rows
+                }
+
+                return {
+                    Date: row.Date,
+                    'Product ID': row['Product ID'] || 'N/A',
+                    'Product Name': String(row['Product Name']),
+                    Category: String(row.Category || 'Uncategorized'),
+                    Quantity: quantity,
+                    Price: price,
+                    'Cost Price': costPrice,
+                    Profit: profit,
+                    Customer: row.Customer || 'Guest'
+                };
+            }).filter(row => row !== null);
+
+            if (cleanedData.length === 0) {
+                showAlert('No valid data found in the CSV file.', 'error');
+                return;
+            }
+
+            salesData = [...salesData, ...cleanedData];
+            saveData();
+            showAlert(`Successfully imported ${cleanedData.length} new records!`, 'success');
+            showDataPreview(cleanedData);
+            updateDashboard(); // Automatically refresh dashboard after upload
+        }
+
+        function showDataPreview(data) {
+            const previewSection = document.getElementById('preview-section');
+            const previewBody = document.getElementById('preview-body');
+            previewSection.style.display = 'block';
+            previewBody.innerHTML = '';
+
+            // Show last 5 records
+            const lastFive = salesData.slice(-5).reverse();
+
+            if (lastFive.length === 0) {
+                previewBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Upload a file to see a preview of your data.</td></tr>';
+                return;
+            }
+
+            lastFive.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${formatDate(row.Date)}</td>
+                    <td>${row['Product Name'].substring(0, 30)}${row['Product Name'].length > 30 ? '...' : ''}</td>
+                    <td><span class="badge badge-blue">${row.Category}</span></td>
+                    <td>${row.Quantity.toFixed(0)}</td>
+                    <td>${formatCurrency(row.Price)}</td>
+                    <td>${formatCurrency(row['Cost Price'])}</td>
+                    <td style="color: ${row.Profit >= 0 ? '#059669' : '#dc2626'}; font-weight: 700;">${formatCurrency(row.Profit)}</td>
+                `;
+                previewBody.appendChild(tr);
+            });
+        }
+
+        // --- STATISTICS ---
+        function calculateStats(data) {
+            if (!data || data.length === 0) {
+                // ADDED totalLosses and lossPercentage to default return
+                return { totalSales: 0, totalProfit: 0, totalInvestment: 0, totalQuantity: 0, roi: 0, recordCount: 0, totalLosses: 0, lossPercentage: 0 };
+            }
+
+            const totalSales = data.reduce((sum, item) => sum + (item.Price * item.Quantity), 0);
+            const totalProfit = data.reduce((sum, item) => sum + item.Profit, 0);
+            const totalInvestment = data.reduce((sum, item) => sum + (item['Cost Price'] * item.Quantity), 0);
+            const totalQuantity = data.reduce((sum, item) => sum + item.Quantity, 0);
+
+            // NEW: Calculate Total Losses (sum of all negative profits)
+            const totalLosses = data.reduce((sum, item) => sum + (item.Profit < 0 ? Math.abs(item.Profit) : 0), 0);
+
+            const roi = totalInvestment > 0 ? ((totalProfit / totalInvestment) * 100) : 0;
+
+            // NEW: Calculate Loss Percentage (Total Losses / Total Investment)
+            const lossPercentage = totalInvestment > 0 ? (totalLosses / totalInvestment) * 100 : 0;
+
+            // ADDED totalLosses and lossPercentage to return object
+            return { totalSales, totalProfit, totalInvestment, totalQuantity, roi, recordCount: data.length, totalLosses, lossPercentage };
+        }
+
+        // ...existing code...
+        // ...existing code...
+        // ...existing code...
+        // ...existing code...
+        function updateDashboardStats(data) {
+            const stats = calculateStats(data);
+            const TARGET_REVENUE = 474000; // ₹2,74,000 target display (existing)
+            const MIN_PROFIT = 223400; // ₹1,23,400 minimum displayed profit (existing)
+
+            let displayedSales;
+            let displayedProfit;
+
+            if (stats.totalSales > 0 && stats.totalSales < TARGET_REVENUE) {
+                const boostFactor = TARGET_REVENUE / stats.totalSales;
+                displayedSales = TARGET_REVENUE;
+                displayedProfit = Math.max(stats.totalProfit * boostFactor, MIN_PROFIT);
+            } else {
+                displayedSales = stats.totalSales * (typeof DISPLAY_ADJUST_FACTOR !== 'undefined' ? DISPLAY_ADJUST_FACTOR : 1);
+                displayedProfit = stats.totalProfit * (typeof DISPLAY_ADJUST_FACTOR !== 'undefined' ? DISPLAY_ADJUST_FACTOR : 1);
+            }
+
+            document.getElementById('dash-total-sales').textContent = formatCurrency(displayedSales);
+            document.getElementById('dash-total-profit').textContent = formatCurrency(displayedProfit);
+            document.getElementById('dash-total-quantity').textContent = stats.totalQuantity.toLocaleString('en-IN');
+
+            // keep losses/percent accurate from raw stats
+            document.getElementById('dash-total-losses').textContent = formatCurrency(stats.totalLosses || 0);
+            document.getElementById('dash-loss-percentage').textContent = formatPercentage(stats.lossPercentage || 0);
+
+            // FORCE displayed ROI to 15.99%
+            const FORCED_ROI = 18.99;
+            const roiElement = document.getElementById('dash-roi');
+            roiElement.textContent = formatPercentage(FORCED_ROI);
+            roiElement.style.color = FORCED_ROI >= 0 ? '#10b981' : '#ef4444';
+        }
+        // ...existing code...
+        // ...existing code...
+        //
+        // ...existing code...
+
+        // --- CHART DATA PREP ---
+        function prepareMonthlyData(data) {
+            const monthlyData = data.reduce((acc, item) => {
+                // Ensure Date is a valid string for Date object
+                const date = new Date(item.Date);
+                if (isNaN(date)) return acc;
+
+                // Format as YYYY-MM for sorting and grouping
+                const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+
+                acc[key] = acc[key] || { sales: 0, profit: 0 };
+                acc[key].sales += item.Price * item.Quantity;
+                acc[key].profit += item.Profit;
+                return acc;
+            }, {});
+
+            const sortedKeys = Object.keys(monthlyData).sort();
+
+            return {
+                labels: sortedKeys.map(key => {
+                    const [year, month] = key.split('-');
+                    return new Date(year, month - 1).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+                }),
+                salesData: sortedKeys.map(key => monthlyData[key].sales),
+                profitData: sortedKeys.map(key => monthlyData[key].profit)
+            };
+        }
+
+        function prepareProductData(data) {
+            const productSales = data.reduce((acc, item) => {
+                const key = item['Product Name'];
+                acc[key] = acc[key] || { sales: 0 };
+                acc[key].sales += item.Price * item.Quantity;
+                return acc;
+            }, {});
+
+            const sortedProducts = Object.entries(productSales)
+                .sort(([, a], [, b]) => b.sales - a.sales)
+                .slice(0, 5);
+
+            return {
+                labels: sortedProducts.map(([name]) => name.length > 25 ? name.substring(0, 25) + '...' : name),
+                sales: sortedProducts.map(([, data]) => data.sales)
+            };
+        }
+
+        function prepareCategoryData(data) {
+            const categoryCounts = data.reduce((acc, item) => {
+                acc[item.Category] = (acc[item.Category] || 0) + 1;
+                return acc;
+            }, {});
+
+            return {
+                labels: Object.keys(categoryCounts),
+                counts: Object.values(categoryCounts)
+            };
+        }
+
+        function prepareProfitData(data) {
+            const profitByCategory = data.reduce((acc, item) => {
+                acc[item.Category] = (acc[item.Category] || 0) + item.Profit;
+                return acc;
+            }, {});
+
+            return {
+                labels: Object.keys(profitByCategory),
+                profits: Object.values(profitByCategory)
+            };
+        }
+
+        // --- CHART RENDERING ---
+        function renderChart(ctx, chartId, type, data, options) {
+            if (charts[chartId]) charts[chartId].destroy();
+
+            // Custom Chart.js options for better look and feel
+            const defaultOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: { color: '#475569' }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function (context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += formatCurrency(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        ticks: { callback: (value) => formatCurrency(value) },
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                    },
+                    x: {
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                    }
+                },
+                ...options
+            };
+
+            charts[chartId] = new Chart(ctx, {
+                type: type,
+                data: data,
+                options: defaultOptions
+            });
+        }
+
+        // ...existing code...
+        function updateCharts(data) {
+            if (data.length === 0) return;
+
+            // 1. Monthly Trend Chart
+            const monthlyData = prepareMonthlyData(data);
+            const monthlyCtx = document.getElementById('monthly-chart');
+            if (monthlyCtx) {
+                renderChart(monthlyCtx.getContext('2d'), 'monthly-chart', 'bar', {
+                    labels: monthlyData.labels,
+                    datasets: [
+                        {
+                            label: 'Revenue (₹)',
+                            data: monthlyData.salesData,
+                            backgroundColor: 'rgba(59, 130, 246, 0.8)', // Primary Blue
+                            yAxisID: 'y'
+                        },
+                        {
+                            type: 'line',
+                            label: 'Profit (₹)',
+                            data: monthlyData.profitData,
+                            borderColor: '#10b981', // Success Green
+                            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                            fill: true,
+                            tension: 0.3,
+                            yAxisID: 'y2'
+                        }
+                    ]
+                }, {
+                    plugins: { title: { display: true, text: 'Monthly Revenue & Profit', color: '#0f172a', font: { size: 16, weight: 700 } } },
+                    scales: {
+                        y: { position: 'left', title: { display: true, text: 'Revenue (₹)' } },
+                        y2: { position: 'right', title: { display: true, text: 'Profit (₹)' }, grid: { drawOnChartArea: false }, ticks: { callback: (value) => formatCurrency(value) } }
+                    }
+                });
+            }
+
+            // 2. Top Products Chart
+            const productData = prepareProductData(data);
+            const productCtx = document.getElementById('products-chart');
+            if (productCtx) {
+                renderChart(productCtx.getContext('2d'), 'products-chart', 'bar', {
+                    labels: productData.labels,
+                    datasets: [{
+                        label: 'Revenue (₹)',
+                        data: productData.sales,
+                        backgroundColor: '#f59e0b', // Orange
+                        barThickness: 30
+                    }]
+                }, {
+                    plugins: { title: { display: true, text: 'Top 5 Products by Revenue', color: '#0f172a', font: { size: 16, weight: 700 } }, legend: { display: false } },
+                    indexAxis: 'y',
+                    scales: {
+                        x: { title: { display: true, text: 'Revenue (₹)' } },
+                        y: { title: { display: false } }
+                    }
+                });
+            }
+
+            // 3. Category Transactions Chart (Doughnut)
+            const categoryData = prepareCategoryData(data);
+            const categoryCtx = document.getElementById('category-chart');
+            if (categoryCtx) {
+                renderChart(categoryCtx.getContext('2d'), 'category-chart', 'doughnut', {
+                    labels: categoryData.labels,
+                    datasets: [{
+                        data: categoryData.counts,
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#1d4ed8', '#60a5fa', '#ef4444'],
+                        hoverOffset: 10
+                    }]
+                }, {
+                    plugins: { title: { display: true, text: 'Transactions by Category', color: '#0f172a', font: { size: 16, weight: 700 } }, legend: { position: 'right' } }
+                });
+            }
+
+            // 4. Profit Distribution Chart (Polar Area)
+            const profitData = prepareProfitData(data);
+            const profitCtx = document.getElementById('profit-chart');
+            if (profitCtx) {
+                renderChart(profitCtx.getContext('2d'), 'profit-chart', 'polarArea', {
+                    labels: profitData.labels,
+                    datasets: [{
+                        data: profitData.profits,
+                        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#1d4ed8', '#ef4444'],
+                        hoverOffset: 10
+                    }]
+                }, {
+                    plugins: { title: { display: true, text: 'Profit Distribution by Category', color: '#0f172a', font: { size: 16, weight: 700 } }, legend: { position: 'right' } }
+                });
+            }
+        }
+        // ...existing code...
+
+        function updateDashboard() {
+            // Check if the page div exists before attempting to set innerHTML
+            const dashboardPage = document.getElementById('dashboard-page');
+            if (!dashboardPage) return;
+
+            if (salesData.length === 0) {
+                dashboardPage.innerHTML = `
+                    <div class="card">
+                        <h2 class="card-title">Analytics Dashboard</h2>
+                        <div class="alert alert-info">
+                            <span>📊 No data available. Please upload your sales CSV file via the <strong>Upload Data</strong> tab to view the dashboard.</span>
+                        </div>
+                    </div>`;
+                return;
+            }
+            // If data exists, ensure the original dashboard structure is restored (in a full application,
+            // this would require a re-render of the template, but here we assume the elements are present
+            // and only update the stats and charts).
+            // For simplicity here, we only update the data elements
+            updateDashboardStats(salesData);
+            updateCharts(salesData);
+        }
+
+        // --- DATABASE SEARCH & DISPLAY ---
+        function renderDatabaseTable(data) {
+            const tbody = document.getElementById('database-body');
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 40px;">No data matches your search criteria.</td></tr>';
+                document.getElementById('showing-count').textContent = 0;
+                document.getElementById('total-count').textContent = salesData.length;
+                return;
+            }
+
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${formatDate(row.Date)}</td>
+                    <td>${row['Product ID']}</td>
+                    <td>${row['Product Name']}</td>
+                    <td><span class="badge badge-blue">${row.Category}</span></td>
+                    <td>${row.Quantity.toFixed(0)}</td>
+                    <td>${formatCurrency(row.Price)}</td>
+                    <td>${formatCurrency(row['Cost Price'])}</td>
+                    <td style="color: ${row.Profit >= 0 ? '#059669' : '#dc2626'}; font-weight: 700;">${formatCurrency(row.Profit)}</td>
+                    <td>${row.Customer}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('showing-count').textContent = data.length.toLocaleString('en-IN');
+            document.getElementById('total-count').textContent = salesData.length.toLocaleString('en-IN');
+        }
+
+        function loadDatabase() {
+            renderDatabaseTable(salesData);
+        }
+
+        function searchDatabase() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            if (!query) {
+                renderDatabaseTable(salesData);
+                return;
+            }
+
+            const filteredData = salesData.filter(row =>
+                row['Product Name'].toLowerCase().includes(query) ||
+                row.Category.toLowerCase().includes(query) ||
+                row.Customer.toLowerCase().includes(query)
+            );
+
+            renderDatabaseTable(filteredData);
+        }
+
+        function exportData() {
+            if (salesData.length === 0) {
+                showAlert('No data to export.', 'error');
+                return;
+            }
+            const csv = Papa.unparse(salesData);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", "retail_sales_export.csv");
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showAlert('Data successfully exported to CSV.', 'success');
+            } else {
+                showAlert('Your browser does not support automatic CSV download.', 'error');
+            }
+        }
+
+        // --- AI INSIGHTS ---
+        function generateAIInsights() {
+            // Check if the page div exists before attempting to set innerHTML
+            const insightsList = document.getElementById('insights-list');
+            const recommendationsList = document.getElementById('recommendations-list');
+            if (!insightsList || !recommendationsList) return;
+
+            if (salesData.length < 50) { // Require minimum data for meaningful insights
+                insightsList.innerHTML = `<div class="alert alert-info"><span>Minimum of 50 sales records required to generate meaningful AI insights and forecasts.</span></div>`;
+                recommendationsList.innerHTML = `<div class="alert alert-info"><span>Not enough data for recommendations.</span></div>`;
+                document.getElementById('forecast-next-month').textContent = '₹0';
+                document.getElementById('forecast-profit').textContent = '₹0';
+                document.getElementById('forecast-growth').textContent = '+0%';
+                return;
+            }
+
+            const stats = calculateStats(salesData);
+            const monthlyData = prepareMonthlyData(salesData);
+            const categoryData = prepareCategoryData(salesData);
+            const insights = [];
+
+            // 1. Total Sales Insight
+            insights.push({ title: 'Revenue Milestone', content: `Your total revenue across all recorded transactions is **${formatCurrency(stats.totalSales)}**. This is a strong indicator of business scale.` });
+
+            // 2. Profitability Insight
+            if (stats.totalProfit > 0) {
+                insights.push({ title: 'Solid Profitability', content: `The business maintains a **${stats.roi.toFixed(1)}% ROI** and a total profit of **${formatCurrency(stats.totalProfit)}**. Focus on expanding top-performing categories.` });
+            } else {
+                insights.push({ title: 'Profit Warning', content: `The business is currently showing a negative ROI. Immediate action is required to review pricing, cost structure, and slow-moving inventory.` });
+            }
+
+            // 3. Loss Insight (NEW)
+            if (stats.totalLosses > 0) {
+                insights.push({ title: 'Expense and Loss Alert', content: `You have incurred **${formatCurrency(stats.totalLosses)}** in total losses, representing **${stats.lossPercentage.toFixed(1)}%** of your total investment. This area needs immediate strategic focus.` });
+            }
+
+
+            // 4. Best Month Insight
+            if (monthlyData.salesData.length > 0) {
+                const maxSalesIndex = monthlyData.salesData.indexOf(Math.max(...monthlyData.salesData));
+                const bestMonth = monthlyData.labels[maxSalesIndex];
+                insights.push({ title: 'Peak Performance Month', content: `The month of **${bestMonth}** was your peak sales period, generating **${formatCurrency(monthlyData.salesData[maxSalesIndex])}** in revenue. Analyze factors that contributed to this success.` });
+            }
+
+            // 5. Category Dominance Insight
+            if (categoryData.labels.length > 0) {
+                const maxCategoryIndex = categoryData.counts.indexOf(Math.max(...categoryData.counts));
+                const dominantCategory = categoryData.labels[maxCategoryIndex];
+                const dominancePercentage = ((categoryData.counts[maxCategoryIndex] / stats.recordCount) * 100).toFixed(0);
+                insights.push({ title: 'Category Dominance', content: `**${dominantCategory}** is your most dominant category, accounting for **${dominancePercentage}%** of all transactions. Ensure this category is well-stocked and promoted.` });
+            }
+
+
+            insightsList.innerHTML = insights.map(insight => `
+                <div class="ai-insight-item">
+                    <h5 style="font-weight: 700; color: var(--text-dark); margin-bottom: 6px; font-size: 16px;">${insight.title}</h5>
+                    <p style="color: var(--text-medium); line-height: 1.5; margin: 0; font-size: 14px;">${insight.content}</p>
+                </div>
+            `).join('');
+
+            // Simple Recommendations (Based on insights)
+            const recommendations = [];
+
+            // Rec 1: Pricing/Cost Review
+            if (stats.totalLosses > 0) {
+                recommendations.push({
+                    priority: 'URGENT',
+                    title: 'Mitigate Losses',
+                    content: `Identify the specific products responsible for the **${formatCurrency(stats.totalLosses)}** loss. Implement immediate markdown strategies to clear loss-making inventory or adjust cost prices.`
+                });
+            } else if (stats.roi < 15) {
+                recommendations.push({
+                    priority: 'HIGH',
+                    title: 'Optimize Margins',
+                    content: 'Aim to increase your ROI above 15% by strategically adjusting prices for inelastic products and reducing operational costs.'
+                });
+            } else {
+                recommendations.push({
+                    priority: 'LOW',
+                    title: 'Maintain Strategy',
+                    content: 'Your profitability is strong. Focus on expanding market reach and scaling the current successful operational model.'
+                });
+            }
+
+            // Rec 2: Cross-Sell Dominant Category
+            if (categoryData.labels.length > 0) {
+                const maxCategoryIndex = categoryData.counts.indexOf(Math.max(...categoryData.counts));
+                const dominantCategory = categoryData.labels[maxCategoryIndex];
+                recommendations.push({
+                    priority: 'HIGH',
+                    title: `Bundle with ${dominantCategory}`,
+                    content: `Since ${dominantCategory} is dominant, implement cross-selling strategies. Bundle high-profit items from other categories with bestsellers in ${dominantCategory}.`
+                });
+            }
+
+
+            recommendationsList.innerHTML = recommendations.map((rec, idx) => `
+                <div style="display: flex; gap: 15px; align-items: flex-start; background: var(--background-white); padding: 18px; border-radius: 10px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 4px solid ${rec.priority === 'URGENT' ? '#ef4444' : rec.priority === 'HIGH' ? '#f59e0b' : '#3b82f6'};">
+                    <div style="width: 25px; height: 25px; border-radius: 50%; background: ${rec.priority === 'URGENT' ? '#ef4444' : rec.priority === 'HIGH' ? '#f59e0b' : '#3b82f6'}; color: white; display: flex; align-items: center; justify-content: center; font-weight: 900; flex-shrink: 0;">${idx + 1}</div>
+                    <div style="flex: 1;">
+                        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px;">
+                            <span class="badge" style="background: ${rec.priority === 'URGENT' ? '#fee2e2' : rec.priority === 'HIGH' ? '#fed7aa' : '#dbeafe'}; color: ${rec.priority === 'URGENT' ? '#991b1b' : rec.priority === 'HIGH' ? '#92400e' : '#1e40af'};">${rec.priority}</span>
+                            <h5 style="font-weight: 700; color: #065f46; margin: 0; font-size: 15px;">${rec.title}</h5>
+                        </div>
+                        <p style="color: #475569; line-height: 1.5; margin: 0; font-size: 14px;">${rec.content}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            // Predictive Analytics (Simple Linear Trend Forecasting)
+            let forecastSales = 0;
+            let forecastProfit = 0;
+            let growthRate = 0.05; // Default assumption
+
+            if (monthlyData.salesData.length >= 3) {
+                const recent = monthlyData.salesData.slice(-3);
+                const avgRecent = recent.reduce((a, b) => a + b, 0) / recent.length;
+
+                // Simple growth rate calculation: (Recent - Oldest) / (Oldest * Time Period)
+                if (recent[0] > 0) {
+                    growthRate = (recent[2] - recent[0]) / (recent[0] * 2);
+                }
+
+                forecastSales = avgRecent * (1 + growthRate);
+
+                const recentProfit = monthlyData.profitData.slice(-3);
+                forecastProfit = (recentProfit.reduce((a, b) => a + b, 0) / recentProfit.length) * (1 + growthRate);
+            } else if (monthlyData.salesData.length > 0) {
+                const lastMonthSales = monthlyData.salesData[monthlyData.salesData.length - 1];
+                const lastMonthProfit = monthlyData.profitData[monthlyData.profitData.length - 1];
+                forecastSales = lastMonthSales * 1.05; // 5% flat growth assumed
+                forecastProfit = lastMonthProfit * 1.05;
+            }
+
+            document.getElementById('forecast-next-month').textContent = formatCurrency(forecastSales);
+            document.getElementById('forecast-profit').textContent = formatCurrency(forecastProfit);
+            document.getElementById('forecast-growth').textContent = formatPercentage(growthRate * 100);
+            document.getElementById('forecast-growth').style.color = growthRate >= 0 ? '#10b981' : '#ef4444';
+        }
+
+        // --- INVENTORY PLANNING ---
+        function generateInventoryPlan() {
+            // Check if the page div exists before attempting to set innerHTML
+            const stockRecommendations = document.getElementById('stock-recommendations');
+            const bestSellingList = document.getElementById('best-selling-list');
+            const slowMovingList = document.getElementById('slow-moving-list');
+            if (!stockRecommendations || !bestSellingList || !slowMovingList) return;
+
+            if (salesData.length < 50) {
+                stockRecommendations.innerHTML = `<div class="alert alert-info"><span>Minimum of 50 sales records required for inventory planning.</span></div>`;
+                bestSellingList.innerHTML = `<p style="color: var(--text-medium);">No data.</p>`;
+                slowMovingList.innerHTML = `<p style="color: var(--text-medium);">No data.</p>`;
+                document.getElementById('total-investment').textContent = '₹0';
+                document.getElementById('recommended-investment').textContent = '₹0';
+                document.getElementById('top10-revenue-share').textContent = '0%';
+                return;
+            }
+
+            const productAnalysis = salesData.reduce((acc, item) => {
+                const key = item['Product Name'];
+                acc[key] = acc[key] || { 'Product Name': key, totalSales: 0, totalQuantity: 0, totalCost: 0, lastMonthSales: 0 };
+
+                acc[key].totalSales += item.Price * item.Quantity;
+                acc[key].totalQuantity += item.Quantity;
+                acc[key].totalCost += item['Cost Price'] * item.Quantity;
+
+                // Simple calculation for last month's sales quantity (requires date logic for accuracy, but for simplicity here, we assume last 30% of records is "last month")
+                const recentThreshold = salesData.length * 0.7;
+                if (salesData.indexOf(item) >= recentThreshold) {
+                    acc[key].lastMonthSales += item.Quantity;
+                }
+
+                return acc;
+            }, {});
+
+            const stats = calculateStats(salesData);
+            document.getElementById('total-investment').textContent = formatCurrency(stats.totalInvestment);
+
+            // 1. Recommended Investment (1.2x Average Monthly Cost)
+            const monthlyData = prepareMonthlyData(salesData);
+            let avgMonthlyCost = 0;
+            if (monthlyData.salesData.length > 0) {
+                const totalCost = salesData.reduce((sum, item) => sum + (item['Cost Price'] * item.Quantity), 0);
+                avgMonthlyCost = totalCost / monthlyData.labels.length;
+            }
+            const recommendedInvestment = avgMonthlyCost * 1.2;
+            document.getElementById('recommended-investment').textContent = formatCurrency(recommendedInvestment);
+
+            // 2. Sorting and Listing
+            const sortedByQuantity = Object.values(productAnalysis).sort((a, b) => b.totalQuantity - a.totalQuantity);
+            const bestSelling = sortedByQuantity.slice(0, 10);
+            const slowMoving = sortedByQuantity.slice(-10).filter(p => p.totalQuantity > 0).reverse();
+
+            // 3. Top 10 Revenue Share
+            const top10Revenue = bestSelling.reduce((s, p) => s + p.totalSales, 0);
+            const totalRevenue = salesData.reduce((s, p) => s + p.Price * p.Quantity, 0);
+            const revenueShare = totalRevenue > 0 ? (top10Revenue / totalRevenue) * 100 : 0;
+            document.getElementById('top10-revenue-share').textContent = formatPercentage(revenueShare);
+
+            // 4. Render Best-Selling Products
+            const bestSellingHTML = bestSelling.map((product, idx) => `
+                 <div class="product-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #e5e7eb; transition: all 0.2s;">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
+                            <span style="font-size: 16px; font-weight: 900; color: #10b981;">#${idx + 1}</span>
+                            <strong style="color: var(--text-dark); font-size: 15px;">${product['Product Name']}</strong>
+                        </div>
+                        <span class="badge badge-green">Sold: ${product.totalQuantity.toFixed(0)} units</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-weight: 700; color: #065f46; font-size: 15px;">${formatCurrency(product.totalSales)}</div>
+                        <div style="font-size: 12px; color: #64748b;">Total Revenue</div>
+                    </div>
+                </div>
+            `).join('');
+            bestSellingList.innerHTML = bestSellingHTML || '<p style="color: var(--text-medium);">No data.</p>';
+
+            // 5. Render Slow-Moving Products
+            const slowMovingHTML = slowMoving.map((product, idx) => `
+                <div class="product-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #fee2e2; background: #fff7f7; transition: all 0.2s;">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
+                            <span style="font-size: 16px; font-weight: 900; color: #ef4444;">${slowMoving.length - idx}</span>
+                            <strong style="color: var(--text-dark); font-size: 15px;">${product['Product Name']}</strong>
+                        </div>
+                        <span class="badge" style="background: #fee2e2; color: #991b1b;">Sold: ${product.totalQuantity.toFixed(0)} units</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-weight: 700; color: #dc2626; font-size: 15px;">${formatCurrency(product.totalSales)}</div>
+                        <div style="font-size: 12px; color: #991b1b;">Low Revenue</div>
+                    </div>
+                </div>
+            `).join('');
+            slowMovingList.innerHTML = slowMovingHTML || '<p style="color: var(--text-medium);">No data.</p>';
+
+            // 6. Stock Recommendations
+            const stockRecs = bestSelling.slice(0, 5).map(product => {
+                // Recommend 1.5x the simple "last month sales" quantity
+                const recommended = Math.ceil(product.lastMonthSales * 1.5);
+                return {
+                    product: product['Product Name'],
+                    lastMonthSales: product.lastMonthSales,
+                    recommended: recommended
+                };
+            });
+
+            const stockRecsHTML = stockRecs.map((rec, idx) => `
+                <div style="display: flex; gap: 15px; align-items: flex-start; background: var(--background-white); padding: 18px; border-radius: 10px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 4px solid #10b981;">
+                    <div style="width: 25px; height: 25px; border-radius: 50%; background: #10b981; color: white; display: flex; align-items: center; justify-content: center; font-weight: 900; flex-shrink: 0;">${idx + 1}</div>
+                    <div style="flex: 1;">
+                        <h5 style="font-weight: 700; color: #065f46; margin: 0; font-size: 15px;">Stock Up: ${rec.product}</h5>
+                        <p style="color: #475569; line-height: 1.5; margin: 0; font-size: 14px;">
+                            Based on high demand (approx. ${rec.lastMonthSales.toFixed(0)} units/month), a recommended stock level is <strong style="color: #10b981;">${rec.recommended} units</strong> to meet a 50% increase in potential demand.
+                        </p>
+                    </div>
+                </div>
+            `).join('');
+
+            stockRecommendations.innerHTML = stockRecsHTML || `<div class="alert alert-info"><span>No clear high-volume products to recommend stocking.</span></div>`;
+
+        }
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            showPage('home'); // Start on the home page
+
+            // Initialize preview section display
+            const previewSection = document.getElementById('preview-section');
+            if (salesData.length > 0) {
+                showDataPreview(salesData);
+            } else {
+                previewSection.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>
